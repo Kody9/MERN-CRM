@@ -19,16 +19,32 @@ router.post('/customers', async (req, res) => {
 });
 
 
+// server/routes/customers.js
 router.get('/customers/:id', async (req, res) => {
-  try {
-      const customer = await Customer.findOne({ id: req.params.id });
-      if (!customer) {
-          return res.status(404).json({ message: 'Customer not found' });
-      }
-      res.json(customer);
-  } catch (error) {
-      res.status(500).json({ message: error.message });
-  }
+    try {
+        // Assuming `id` is a custom field and not MongoDB's default `_id`
+        const customer = await Customer.findOne({ id: req.params.id });
+        if (!customer) {
+            return res.status(404).json({ message: 'Customer not found' });
+        }
+        res.json(customer);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
+
+router.delete('/customers/:id', async (req, res) => {
+    try {
+        const result = await Customer.findOneAndDelete({ id: req.params.id });
+        if (!result) {
+            return res.status(404).json({ message: 'No customer found with that ID' });
+        }
+        res.status(200).json({ message: 'Customer deleted' });
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+
   
 module.exports = router;
